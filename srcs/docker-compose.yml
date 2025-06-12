@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  nginx:
+    build: ./requirements/nginx
+    ports:
+      - "443:443"
+    volumes:
+      - wordpress_data:/var/www/html
+    networks:
+      - inception
+    depends_on:
+      - wordpress
+
+  wordpress:
+    build: ./requirements/wordpress
+    volumes:
+      - wordpress_data:/var/www/html
+    networks:
+      - inception
+    depends_on:
+      - mariadb
+
+  mariadb:
+    build: ./requirements/mariadb
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    networks:
+      - inception
+
+volumes:
+  wordpress_data:
+    driver: local
+    name: wordpress_data
+  mariadb_data:
+    driver: local
+    name: mariadb_data
+
+networks:
+  inception:
+    driver: bridge
