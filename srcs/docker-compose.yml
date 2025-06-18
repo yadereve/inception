@@ -5,14 +5,22 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./web:/var/www/html
+      - wp-data:/var/www/html
 
   wordpress:
     build: requirements/wordpress/.
     container_name: wp-php
     volumes:
-      - ./web:/var/www/html
+      - wp-data:/var/www/html
 
   mariadb:
     build: requirements/mariadb/.
     container_name: mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wpuser
+      WYSQL_PASSWORD: pqssword
+
+volumes:
+  wp-data:

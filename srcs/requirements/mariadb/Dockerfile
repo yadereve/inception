@@ -7,4 +7,4 @@ COPY init.sql /etc/mysql/init.sql
 
 RUN mkdir /run/mysqld
 
-CMD ["mysqld"]
+CMD ["mysqld", "--init-file=/etc/mysql/init.sql"]
