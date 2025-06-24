@@ -6,11 +6,13 @@ services:
       - wordpress
       - mariadb
     ports:
-      - "80:80"
+      - "443:443"
     volumes:
       - wp-data:/var/www/html
     networks:
       inception:
+    env_file:
+      - .env
 
   wordpress:
     build: requirements/wordpress/.
@@ -21,6 +23,9 @@ services:
       - wp-data:/var/www/html
     networks:
       inception:
+    env_file:
+      - .env
+
 
   mariadb:
     build: requirements/mariadb/.
@@ -34,9 +39,11 @@ services:
       WYSQL_PASSWORD: pqssword
     networks:
       inception:
+    env_file:
+      - .env
 
 volumes:
   wp-data:
 
 networks:
-      inception:
+  inception:

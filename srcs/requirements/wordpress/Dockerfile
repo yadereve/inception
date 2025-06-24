@@ -9,10 +9,19 @@ RUN apt-get update && apt-get install -y lsb-release apt-transport-https ca-cert
     php7.4-gmp php7.4-bcmath php7.4-imagick php7.4-redis \
     default-mysql-client
 
+# copy config file
 COPY www.conf /etc/php/7.4/fpm/pool.d/.
+
+# copy script
 COPY script.sh .
 RUN chmod +x script.sh
 
 RUN mkdir -p /run/php
 
-CMD ["./script.sh"]
+RUN mkdir -p /var/www/html
+RUN set -ex && \
+    cd /var/www/html && \
+    curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
+    chmod +x wp-cli.phar
+
+ENTRYPOINT [ "./script.sh" ]

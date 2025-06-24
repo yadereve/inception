@@ -1,27 +1,26 @@
 #!/bin/bash
 
-until mysqladmin ping -h"mariadb" --silent; do
+until mysqladmin ping -h"$DBHOST" -u"$DBUSER" -p"$DBPASS" --silent; do
     echo "⏳ Waiting for MariaDB..."
     sleep 2
 done
 
 cd /var/www/html
-    curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
-    chmod +x wp-cli.phar
-if [ ! -f /var/www/http/wp-config.php ]; then
+DB_CHECK=$(./wp-cli.phar db size --allow-root 2>&1)
+if echo "$DB_CHECK" | grep -q "0 tables"; then
     ./wp-cli.phar core download --allow-root
     ./wp-cli.phar config create \
-        --dbname=wordpress \
-        --dbuser=wpuser \
-        --dbpass=password \
-        --dbhost=mariadb \
+        --dbname="$DBNAME" \
+        --dbuser="$DBUSER" \
+        --dbpass="$DBPASS" \
+        --dbhost="$DBHOST" \
         --allow-root
     ./wp-cli.phar core install \
-        --url=localhost \
-        --title=inception \
-        --admin_user=admin \
-        --admin_password=admin \
-        --admin_email=admin@admin.com \
+        --url="$DOMAIN" \
+        --title="$WPTITLE" \
+        --admin_user="$WPADMINUSER" \
+        --admin_password="$WPADMINPASS" \
+        --admin_email="$WPADMINEMAIL" \
         --allow-root
 fi
 

@@ -8,4 +8,4 @@ COPY script.sh .
 
 RUN mkdir /run/mysqld && chmod +x script.sh
 
-CMD ["./script.sh"]
+ENTRYPOINT [ "./script.sh" ]
