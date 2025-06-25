@@ -1,27 +1,29 @@
 FROM debian:oldstable
 
-RUN apt-get update && apt-get install -y lsb-release apt-transport-https ca-certificates curl gnupg \
-    && echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list \
-    && curl -fsSL https://packages.sury.org/php/apt.gpg | apt-key add - \
-    && apt-get update && apt-get install -y \
-    php7.4 php7.4-fpm php7.4-mysql php7.4-mbstring php7.4-xml \
-    php7.4-gd php7.4-curl php7.4-zip php7.4-xmlrpc php7.4-soap php7.4-intl php7.4-cli php7.4-ldap php7.4-imap \
-    php7.4-gmp php7.4-bcmath php7.4-imagick php7.4-redis \
+RUN apt-get update && apt-get install -y curl php-fpm php-mysql php-mbstring php-xml \
+    php-gd php-curl php-zip php-xmlrpc php-soap php-intl php-cli php-ldap php-imap \
+    php-gmp php-bcmath php-imagick php-redis \
     default-mysql-client
 
-# copy config file
-COPY www.conf /etc/php/7.4/fpm/pool.d/.
+# Install PHP 7.4 and listen on port 9000
+RUN sed -i 's|listen = /run/php/php7.4-fpm.sock|listen = 9000|g' /etc/php/7.4/fpm/pool.d/www.conf
+
+WORKDIR /var/www/html
 
 # copy script
-COPY script.sh .
+COPY ./tools/script.sh .
 RUN chmod +x script.sh
 
+# Configure PHP-FPM to run in the foreground
 RUN mkdir -p /run/php
 
-RUN mkdir -p /var/www/html
-RUN set -ex && \
-    cd /var/www/html && \
-    curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
-    chmod +x wp-cli.phar
 
-ENTRYPOINT [ "./script.sh" ]
+# Download and extract WordPress
+RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
+    chmod +x wp-cli.phar && \
+    mv wp-cli.phar /usr/local/bin/wp
+
+EXPOSE 9000
+
+# Start the PHP-FPM server
+ENTRYPOINT [ "bash", "./script.sh" ]

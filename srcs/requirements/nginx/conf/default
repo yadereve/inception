@@ -26,9 +26,9 @@ server {
 	listen 443 ssl default_server;
 	listen [::]:443 ssl default_server;
 
-
 	ssl_certificate /etc/ssl/certs/nginx.crt;
 	ssl_certificate_key /etc/ssl/private/nginx.key;
+	ssl_protocols TLSv1.3;
 
 	# Note: You should disable gzip for SSL traffic.
 	# See: https://bugs.debian.org/773332
@@ -44,14 +44,21 @@ server {
 	root /var/www/html;
 
 	# Add index.php to the list if you are using PHP
-	index index.php index.html index.htm index.nginx-debian.html;
+	index index.php index.html;
 
-	server_name _;
+	server_name yadereve.42.fr www.yadereve.42.fr;
+
+	location ~* \.(js|css|woff2)$ {
+		add_header 'Access-Control-Allow-Origin' 'https://yadereve.42.fr';
+		add_header 'Access-Control-Allow-Methods' 'GET, OPTIONS';
+		add_header 'Access-Control-Allow-Headers' 'Origin, X-Requested-With, Content-Type, Accept';
+	}
 
 	location / {
 		# First attempt to serve request as file, then
 		# as directory, then fall back to displaying a 404.
-		try_files $uri $uri/ =404;
+		# try_files $uri $uri/ =404;
+		try_files $uri $uri/ /index.php?$args;
 	}
 
 	# pass PHP scripts to FastCGI server
@@ -63,14 +70,16 @@ server {
 		# fastcgi_pass unix:/run/php/php7.4-fpm.sock;
 		# With php-cgi (or other tcp sockets):
 		fastcgi_pass wp-php:9000;
+		fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+		include fastcgi_params;
 	}
 
 	# deny access to .htaccess files, if Apache's document root
 	# concurs with nginx's one
-	#
-	#location ~ /\.ht {
-	#	deny all;
-	#}
+
+	location ~ /\.ht {
+		deny all;
+	}
 }
 
 

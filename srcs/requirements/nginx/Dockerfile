@@ -2,10 +2,10 @@ FROM debian:oldstable
 
 RUN apt update && apt upgrade && apt install -y nginx openssl
 
-COPY default /etc/nginx/sites-available/default
-COPY script.sh /script.sh
-RUN chmod +x /script.sh
+COPY ./conf/default /etc/nginx/sites-available/default
+COPY ./tools/script.sh /tmp/script.sh
+RUN chmod +x /tmp/script.sh
 
 EXPOSE 443
 
-ENTRYPOINT [ "./script.sh" ]
+ENTRYPOINT [ "bash", "/tmp/script.sh" ]
