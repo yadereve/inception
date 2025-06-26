@@ -13,6 +13,7 @@ services:
       inception:
     env_file:
       - .env
+    restart: on-failure
 
   wordpress:
     build: requirements/wordpress/.
@@ -25,25 +26,32 @@ services:
       inception:
     env_file:
       - .env
+    restart: on-failure
 
 
   mariadb:
     build: requirements/mariadb/.
     container_name: mariadb
     volumes:
-      - ./database:/var/lib/mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: wordpress
-      MYSQL_USER: wpuser
-      WYSQL_PASSWORD: pqssword
+      - mariadb-data:/var/lib/mysql
     networks:
       inception:
     env_file:
       - .env
+    restart: on-failure
 
 volumes:
   wp-data:
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/yadereve/data/wp-data/
+  mariadb-data:
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/yadereve/data/mariadb-data/
 
 networks:
   inception:
+    driver: bridge

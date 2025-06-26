@@ -2,10 +2,13 @@ FROM debian:oldstable
 
 RUN apt update && apt upgrade && apt install -y mariadb-server
 
-COPY ./tools/50-server.cnf /etc/mysql/mariadb.conf.d/.
-COPY ./tools/init.sql /etc/mysql/init.sql
-COPY ./tools/script.sh /tmp
+# Install dependencies
+RUN apt-get clean
 
-RUN mkdir /run/mysqld && chmod +x script.sh
+COPY ./tools/script.sh /tmp/.
 
-ENTRYPOINT [ "bash", "./script.sh" ]
+RUN chmod +x /tmp/script.sh
+
+EXPOSE 3306
+
+ENTRYPOINT [ "bash", "/tmp/script.sh" ]
