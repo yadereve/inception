@@ -13,6 +13,9 @@ down:
 
 clean: down
 	sudo rm -rfv /home/yadereve/data
+	docker rmi -f $(docker images -qa);
+	docker volume rm $(docker volume ls -q);
+	docker network rm $(docker network ls -q) 2>/dev/null
 
 logs:
 	$(DOCKER_COMPOSE) logs -f
