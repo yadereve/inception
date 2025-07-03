@@ -13,13 +13,20 @@ down:
 
 clean: down
 	sudo rm -rfv /home/yadereve/data
+	docker rmi -f $(docker images -qa)
+	docker volume rm $(docker volume ls -q)
+	docker network rm $(docker network ls -q) 2>/dev/null
+
+eval:
+	docker stop $(docker ps -qa);
+	docker rm $(docker ps -qa);
 	docker rmi -f $(docker images -qa);
 	docker volume rm $(docker volume ls -q);
-	docker network rm $(docker network ls -q) 2>/dev/null
+	docker network rm $(docker network ls -q) 2>/dev/null;
 
 logs:
 	$(DOCKER_COMPOSE) logs -f
 
 re: clean all
 
-.PHONY: all up down clean logs re
+.PHONY: all up down clean eval logs re

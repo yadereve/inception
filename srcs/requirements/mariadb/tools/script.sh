@@ -16,7 +16,7 @@ pkill -f mysqld || true
 # Initialize MariaDB data directory if it doesn't exist
 if [ ! -d "/var/lib/mysql/mysql" ]; then
 	echo "📦 Initializing MariaDB data directory..."
-	mysql_install_db --user=mysql --datadir=/var/lib/mysql > /dev/null
+	mysql_install_db --user=mysql --datadir=/var/lib/mysql
 	# mysqld --initialize-insecure --user=mysql --datadir=/var/lib/mysql > /dev/null
 fi
 
@@ -39,19 +39,21 @@ mysql -u root <<EOF
 ALTER USER 'root'@'localhost' IDENTIFIED BY '${SQLROOTPASS}';
 
 -- Create database if not exists
-CREATE DATABASE IF NOT EXISTS \`${SQLNAME}\`;
+CREATE DATABASE IF NOT EXISTS ${SQLNAME};
 
 -- Create user and grant privileges
 CREATE USER IF NOT EXISTS '${SQLUSER}'@'%' IDENTIFIED BY '${SQLPASS}';
 GRANT ALL PRIVILEGES ON \`${SQLNAME}\`.* TO '${SQLUSER}'@'%';
 
--- 🚿 Flush privileges
+-- Flush privileges
 FLUSH PRIVILEGES;
 EOF
 
 # Shut down temporary MariaDB instance gracefully
 echo "🛑 Shutting down temporary MariaDB server..."
-mysqladmin -u root -p"${SQLROOTPASS}" shutdown
+# mysqladmin -u root -p"${SQLROOTPASS}" shutdown
+pkill -f mysqld_safe
+pkill -f mysqld
 
 # Start MariaDB normally (foreground)
 echo "✅ Starting MariaDB server..."

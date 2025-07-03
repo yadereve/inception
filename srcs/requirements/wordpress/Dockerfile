@@ -1,6 +1,6 @@
 FROM debian:oldstable
 
-RUN apt-get update && apt-get install -y curl php-fpm php-mysql php-mbstring php-xml \
+RUN apt update && apt install -y curl php-fpm php-mysql php-mbstring php-xml \
 	php-gd php-curl php-zip php-xmlrpc php-soap php-intl php-cli php-ldap php-imap \
 	php-gmp php-bcmath php-imagick php-redis \
 	default-mysql-client
@@ -11,12 +11,11 @@ RUN sed -i 's|listen = /run/php/php7.4-fpm.sock|listen = 9000|g' /etc/php/7.4/fp
 WORKDIR /var/www/html
 
 # copy script
-COPY ./tools/script.sh .
-RUN chmod +x script.sh
+COPY ./tools/script.sh /etc/script.sh
+RUN chmod +x /etc/script.sh
 
 # Configure PHP-FPM to run in the foreground
 RUN mkdir -p /run/php
-
 
 # Download and extract WordPress
 RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \

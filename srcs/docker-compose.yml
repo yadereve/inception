@@ -1,41 +1,42 @@
 services:
-  nginx:
-    build: requirements/nginx/.
-    container_name: nginx
-    depends_on:
-      - wordpress
-      - mariadb
-    ports:
-      - "443:443"
+  mariadb:
+    container_name: mariadb
+    build: ./requirements/mariadb/.
+    image: mariadb
     volumes:
-      - wp-data:/var/www/html
+      - mariadb-data:/var/lib/mysql
     networks:
-      inception:
+      - inception_network
     env_file:
       - .env
     restart: on-failure
 
   wordpress:
-    build: requirements/wordpress/.
     container_name: wp-php
     depends_on:
       - mariadb
+    build: ./requirements/wordpress/.
+    image: wordpress
     volumes:
       - wp-data:/var/www/html
     networks:
-      inception:
+      - inception_network
     env_file:
       - .env
     restart: on-failure
 
-
-  mariadb:
-    build: requirements/mariadb/.
-    container_name: mariadb
+  nginx:
+    container_name: nginx
+    depends_on:
+      - wordpress
+    build: ./requirements/nginx/.
+    image: nginx
+    ports:
+      - "443:443"
     volumes:
-      - mariadb-data:/var/lib/mysql
+      - wp-data:/var/www/html
     networks:
-      inception:
+      - inception_network
     env_file:
       - .env
     restart: on-failure
@@ -53,5 +54,5 @@ volumes:
       device: /home/yadereve/data/mariadb-data/
 
 networks:
-  inception:
+  inception_network:
     driver: bridge

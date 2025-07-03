@@ -1,11 +1,11 @@
 FROM debian:oldstable
 
-RUN apt update && apt upgrade && apt install -y mariadb-server
+RUN apt update && apt install -y mariadb-server
 
 # Install dependencies
-RUN apt-get clean
+RUN apt clean
 
-COPY ./tools/script.sh /tmp/.
+COPY ./tools/script.sh /tmp/script.sh
 
 RUN chmod +x /tmp/script.sh
 

@@ -1,6 +1,6 @@
 FROM debian:oldstable
 
-RUN apt update && apt upgrade && apt install -y nginx openssl
+RUN apt update && apt install -y nginx openssl
 
 COPY ./conf/default /etc/nginx/sites-available/default
 COPY ./tools/script.sh /tmp/script.sh

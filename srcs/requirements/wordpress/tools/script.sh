@@ -5,7 +5,7 @@ until mysqladmin ping -h"$SQLHOST" -u"$SQLUSER" -p"$SQLPASS" --silent; do
 	sleep 2
 done
 
-if [ ! -f wp-config.php ]; then
+# if [ ! -f wp-config.php ]; then
 	wp core download --allow-root
 	wp config create \
 		--dbname="$SQLNAME" \
@@ -29,6 +29,6 @@ if [ ! -f wp-config.php ]; then
 	wp theme install \
 		"$WPTHEME" --activate \
 		--allow-root
-fi
+# fi
 
-php-fpm7.4 -F
+exec php-fpm7.4 -F
