@@ -6,13 +6,15 @@ RUN apt update && apt install -y curl php-fpm php-mysql php-mbstring php-xml \
 	default-mysql-client
 
 # Install PHP 7.4 and listen on port 9000
-RUN sed -i 's|listen = /run/php/php7.4-fpm.sock|listen = 9000|g' /etc/php/7.4/fpm/pool.d/www.conf
+RUN if [ -f /etc/php/7.4/fpm/pool.d/www.conf ]; then \
+		sed -i 's|listen = /run/php/php7.4-fpm.sock|listen = 9000|g' /etc/php/7.4/fpm/pool.d/www.conf; \
+	fi
 
 WORKDIR /var/www/html
 
 # copy script
-COPY ./tools/script.sh /etc/script.sh
-RUN chmod +x /etc/script.sh
+COPY ./tools/script.sh /tmp/script.sh
+RUN chmod +x /tmp/script.sh
 
 # Configure PHP-FPM to run in the foreground
 RUN mkdir -p /run/php
@@ -25,4 +27,4 @@ RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli
 EXPOSE 9000
 
 # Start the PHP-FPM server
-ENTRYPOINT [ "bash", "./script.sh" ]
+ENTRYPOINT [ "bash", "/tmp/script.sh" ]

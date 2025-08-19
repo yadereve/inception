@@ -2,44 +2,61 @@ services:
   mariadb:
     container_name: mariadb
     build: ./requirements/mariadb/.
-    image: mariadb
+    image: custom-mariadb
+    secrets:
+      - db_password
+      - db_root_password
+    environment:
+      MYSQL_DATABASE: ${SQLNAME}
+      MYSQL_USER: ${SQLUSER}
+      MYSQL_HOST: ${SQLHOST}
     volumes:
       - mariadb-data:/var/lib/mysql
     networks:
       - inception_network
-    env_file:
-      - .env
-    restart: on-failure
+    restart: always
 
   wordpress:
     container_name: wp-php
     depends_on:
       - mariadb
     build: ./requirements/wordpress/.
-    image: wordpress
+    image: custom-wordpress
+    secrets:
+      - db_password
+      - wp_credentials
+    environment:
+      WORDPRESS_DB_HOST: ${SQLHOST}
+      WORDPRESS_DB_NAME: ${SQLNAME}
+      WORDPRESS_DB_USER: ${SQLUSER}
+      DOMAIN: ${DOMAIN}
+      WPTITLE: ${WPTITLE}
+      WPADMINUSER: ${WPADMINUSER}
+      WPADMINEMAIL: ${WPADMINEMAIL}
+      WPUSER: ${WPUSER}
+      WPUSEREMAIL: ${WPUSEREMAIL}
+      WPTHEME: ${WPTHEME}
     volumes:
       - wp-data:/var/www/html
     networks:
       - inception_network
-    env_file:
-      - .env
-    restart: on-failure
+    restart: always
 
   nginx:
     container_name: nginx
     depends_on:
       - wordpress
     build: ./requirements/nginx/.
-    image: nginx
+    image: custom-nginx
     ports:
       - "443:443"
     volumes:
       - wp-data:/var/www/html
     networks:
       - inception_network
-    env_file:
-      - .env
-    restart: on-failure
+    environment:
+      DOMAIN: ${DOMAIN}
+    restart: always
 
 volumes:
   wp-data:
@@ -56,3 +73,11 @@ volumes:
 networks:
   inception_network:
     driver: bridge
+
+secrets:
+  db_password:
+    file: ./secrets/db_password.txt
+  db_root_password:
+    file: ./secrets/db_root_password.txt
+  wp_credentials:
+    file: ./secrets/credentials.txt
