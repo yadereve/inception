@@ -12,4 +12,7 @@ if [ ! -f /etc/ssl/private/nginx.key ] || [ ! -f /etc/ssl/certs/nginx.crt ]; the
 		-subj "/C=PT/ST=Lisbon/L=Lisbon/O=School42/OU=yadereve/CN=$CN"
 fi
 
+chmod 600 /etc/ssl/private/nginx.key
+chmod 644 /etc/ssl/certs/nginx.crt
+
 exec nginx -g 'daemon off;'

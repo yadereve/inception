@@ -1,5 +1,5 @@
 SRC_DIR=./srcs
-DOCKER_COMPOSE=docker compose -f $(SRC_DIR)/docker-compose.yml
+DOCKER_COMPOSE=docker-compose -f $(SRC_DIR)/docker-compose.yml
 
 # detect 42 login dynamically if possible
 LOGIN=$(USER)
@@ -32,3 +32,9 @@ logs:
 re: clean all
 
 .PHONY: all up down clean eval logs re build
+
+
+# docker-compose down -v
+# docker rmi -f $(docker images -aq)
+
+# docker image ls
