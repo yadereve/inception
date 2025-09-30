@@ -69,12 +69,12 @@ services:
     environment:
       DOMAIN: ${DOMAIN}
     healthcheck:
-      test: ["CMD", "curl", "-f", "https://localhost:443", "-k", "||", "exit", "1"]
-      interval: 30s
-      timeout: 10s
+      test: ["CMD", "curl", "-fkSs", "https://localhost:443/healthz"]
+      interval: 10s
+      timeout: 5s
       retries: 3
-      start_period: 30s
-    restart: always
+      start_period: 20s
+    restart: on-failure
 
 volumes:
   wp-data:
